@@ -754,8 +754,12 @@ $question = $questions[$question_number];
                             <p style="color: var(--bs-black);">
                             The rough cost of your setup per year is <?php $cost; ?> <br>
                             The following companies offer services in your area,
-                            <?php foreach ($companies as $company): ?>
-                                <p style="color: var(--bs-black);"><span style="color: var(--bs-blue);"><b><?php echo $company['name']; ?></b></span> found <a href="<?php echo $company['link']; ?>" target='_blank'>here</a> </p>
+                            <?php foreach ($counties as $county): ?>
+                                <?php if ($county == $_SESSION['user_responses'][2]): ?>*
+                                    <?php foreach ($comapnies as $company): ?>
+                                        <p style="color: var(--bs-black);"><span style="color: var(--bs-blue);"><b><?php echo $company['name']; ?></b></span> found <a href="<?php echo $company['link']; ?>" target='_blank'>here</a> </p>
+                                    <?php endforeach; ?>
+                                <?php endif ?>    
                             <?php endforeach; ?>
                             </p>
                         </div>
