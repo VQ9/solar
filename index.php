@@ -5,16 +5,21 @@
 <?php
 session_start();
 $questions = array(
+    // 0
     array(
-        'type' => 'radio',
-        'bootstrap' => 'form-check-input',
-        'question' => 'What type of house do you live in?',
-        'answers' => array(
-            'House',
-            'Apartment',
-            'Caravan'
-        )
+        'type' => 'number',
+        'bootstrap' => '',
+        'question' => 'What is your daily energy usage? (kWh)',
+        'answers' => array('')
     ),
+    // 1
+    array(
+        'type' => 'number',
+        'bootstrap' => '',
+        'question' => 'How long do you intend to stay in your house? (Years)',
+        'answers' => array('')
+    ),
+    // 2
     array(
         'type' => 'text',
         'bootstrap' => '',
@@ -52,7 +57,7 @@ $questions = array(
             'Rutland',
             'Shropshire',
             'Somerset',
-            'Straffordshire',
+            'Staffordshire',
             'Suffolk',
             'Surrey',
             'Susssex',
@@ -64,96 +69,106 @@ $questions = array(
             'Yorkshire'
         )
     ),
-    array(
-        'type' => 'number',
-        'bootstrap' => '',
-        'question' => 'How long do you intend to stay in your house?',
-        'answers' => array('')
-    ),
+    // 3
     array(
         'type' => 'radio',
         'bootstrap' => 'form-check-input',
-        'question' => 'Is your house suitable for solar panels?',
+        'question' => 'Are there any objects (i.e trees, buildings) which obstruct direct sunlight to your roof?',
         'answers' => array(
-            'Yes',
-            'No'
+            'Yes - My roof is often in shade',
+            'Partially - The obstruction can be removed / should not have too much of an impact',
+            'No - My roof has direct access to sunlight for many hours'
         )
     ),
+    // 4
     array(
         'type' => 'radio',
         'bootstrap' => 'form-check-input',
         'question' => 'Is your roof in good condition?',
         'answers' => array(
-            'Yes',
-            'No'
+            'Yes - It is in a condition in which solar panels can be installed',
+            'No - It is not in good condition'
         )
     ),
+    // 5
     array(
         'type' => 'radio',
         'bootstrap' => 'form-check-input',
-        'question' => 'Do you own your home or are you renting?',
+        'question' => 'What type of solar panels are you looking for? (<a href="information.php" target="_blank">more info</a>)',
         'answers' => array(
-            'I own my home',
-            'I am renting my home'
+            'High efficiency',
+            'Low budget',
+            'A compromise of both'
         )
     ),
-    array(
-        'type' => 'radio',
-        'bootstrap' => 'form-check-input',
-        'question' => 'Are you interested in solar panels?',
-        'answers' => array(
-            'Yes',
-            'No'
-        )
-    ),
-    array(
-        'type' => 'radio',
-        'bootstrap' => 'form-check-input',
-        'question' => 'What type of solar panels are you interested in? (<a href="information.php" target="_blank">more info</a>)',
-        'answers' => array(
-            'Monocrystalline Solar Panels (Mono-SI)',
-            'Polycrystalline Solar Panels (p-Si)',
-            'Thin-Film (TFSC) / Amorphous Silicon Solar Panels (A-SI)',
-            'Concentrated PV Cell (CVP)'
-        )
-    ),
+    // 6
     array(
         'type' => 'radio',
         'bootstrap' => 'form-check-input',
         'question' => 'Are you interested in a battery system? (<a href="information.php" target="_blank">more info</a>)',
         'answers' => array(
-            'Yes',
-            'No'
+            'Yes - I am interested in batteries',
+            'Maybe - I might want it in the future',
+            'No - Batteries are not what I am looking for'
         )
     ),
+    // 7
+    array(
+        'type' => 'number',
+        'bootstrap' => '',
+        'question' => 'What capacity are you interested in installing? (kWh)',
+        'answers' => array('')
+    ),
+    // 8
+    array(
+        'type' => 'radio',
+        'bootstrap' => 'form-check-input',
+        'question' => 'What type of battery are you looking for? (<a href="information.php" target="_blank">more info</a>)',
+        'answers' => array(
+            'High capacity',
+            'Lower budget'
+        )
+    ),
+    // 9
+    array(
+        'type' => 'radio',
+        'bootstrap' => 'form-check-input',
+        'question' => 'Do you live in an area with frequent power outages?',
+        'answers' => array(
+            'Yes - I experience power outages',
+            'No - I have no power reliancy issues'
+        )
+    ),
+    // 10
     array(
         'type' => 'radio',
         'bootstrap' => 'form-check-input',
         'question' => 'Do electricians have access to your fuse board/consumer unit?',
         'answers' => array(
-            'Yes',
-            'No'
+            'Yes - I can see a clear route for new cables to enter the house easily',
+            'No - The board is in an obstructed location which is difficult to access'
         )
     ),
+    // 11
     array(
         'type' => 'radio',
         'bootstrap' => 'form-check-input',
         'question' => 'Do you have the space for the inverter and batteries?',
         'answers' => array(
-            'Yes',
-            'No'
+            'Yes - I have a neat cupboard space for potential solar panels',
+            'No - I have no spare room for batteries or an inverter'
         )
     ),
+    // 12
     array(
         'type' => 'radio',
         'bootstrap' => 'form-check-input',
         'question' => 'Why do you want solar panels?',
         'answers' => array(
-            'For the environment',
-            'Economic reasons'
+            'To save the environment',
+            'An economic investment'
         )
     ),
-    
 );
 
 $counties = array(
@@ -585,12 +600,49 @@ if (isset($_POST['submit'])) {
         $answer = $_POST['answer'];
         $_SESSION['user_responses'][$question_number] = $answer;
         $_SESSION['valid'] = True;
-        
-        if ($question_number == '6' and $answer == 'No') {
-            $question_number = 9;
+
+        // Code for calculating cost
+        $cost = $_SESSION['user_responses'][1000];      
+
+        if ($question_number > 1) {
+            $years = $_SESSION['user_responses'][1];
         }
-        elseif ($question_number == '9' and $answer == 'No') {
-            $question_number = 12;
+
+        if ($question_number == '0') {
+            // 8 kWh energy use per day --> Solar Panels with 4 kWp output
+            // Thus £5000
+            $cost = $cost * ($answer / 2) * 1250;
+        }
+        elseif ($question_number == '1') {
+            // £5000 pays off in 10 years
+            $cost  = $cost / ($answer * 500);
+            if ( $cost < 1) {
+                $cost = 0;
+            }
+        }
+        elseif ($question_number == '4' and $answer == "No - It is not in good condition") {
+            $cost  = $cost + (2000 / $years);
+        }
+        elseif ($question_number == '5' and $answer == "Low budget") {
+            $cost = $cost - (500 / $years);
+        }
+        elseif ($question_number == '5' and $answer == "A compromise of both") {
+            $cost = $cost - (250 / $years);
+        }
+        elseif ($question_number == "7") {
+            // 8 kWh costs 6000
+            $cost = $cost + (($answer * 750) / $years);
+        }
+        elseif ($question_number == "8" and $answer == "Lower budget") {
+            $cost = $cost - (500 / $years);
+        }
+        elseif ($question_number == "10" and $answer == "No - The board is in an obstructed location which is difficult to access") {
+            $cost = $cost - (1000 / $years);
+        }
+        $_SESSION['user_responses'][1000] = $cost;
+        // Code for question progression
+        if ($question_number == '6' and $answer == 'No - Batteries are not what I am looking for') {
+            $question_number = 9;
         }
         else {
             $question_number++;
@@ -621,6 +673,7 @@ if (!(isset($_SESSION['valid']))) {
 }
 
 $question = $questions[$question_number];
+
 ?>
 
 
@@ -665,7 +718,7 @@ $question = $questions[$question_number];
                     <p class="text-muted">
                         <input type="hidden" name="question_number" value="<?php echo $question_number; ?>">
                     </p>
-                    <?php if ($question_number != 1):?>
+                    <?php if ($question_number != 2):?>
                         <?php foreach ($question['answers'] as $answer): ?>
                             <label>
                                 <input class="<?php echo $bootstrap;?>" type="<?php echo $question['type']; ?>" name="answer" value="<?php echo $answer; ?>">
@@ -681,7 +734,7 @@ $question = $questions[$question_number];
                         </select>
                     <?php endif; ?>
                     <br><br>
-                    <?php if ($question_number == 11): ?>
+                    <?php if ($question_number == 12): ?>
                         <button type="button" data-toggle="modal" data-target="#modal-1" class="btn btn-primary">Finish</button>
                     <?php else: ?>
                         <input class="btn btn-primary" type="submit" name="submit" value="Next">
@@ -699,7 +752,7 @@ $question = $questions[$question_number];
                         </div>
                         <div class="modal-body">
                             <p style="color: var(--bs-black);">
-                            The rough cost of your setup as it is currently will cost roughly <?php $cost; ?> <br>
+                            The rough cost of your setup per year is <?php $cost; ?> <br>
                             The following companies offer services in your area,
                             <?php foreach ($companies as $company): ?>
                                 <p style="color: var(--bs-black);"><span style="color: var(--bs-blue);"><b><?php echo $company['name']; ?></b></span> found <a href="<?php echo $company['link']; ?>" target='_blank'>here</a> </p>
@@ -764,9 +817,9 @@ $question = $questions[$question_number];
     $('input[type=radio][name=answer]').change(function() {
         var selected = $(this).val();
         
-        if (selected == "Apartment") {
+        if (selected == "Yes - My roof is often in shade") {
             var modal = document.getElementById("helpingModal");
-            var message = "You will need to consult your Landlord to see if this is possible.";
+            var message = "Your solar output will be severely impeded. It might not be worth your time to install solar panels.";
             modal.setAttribute('data-message', message);
 
             var modalMessage = modal.querySelector('#modal-message');
@@ -774,9 +827,89 @@ $question = $questions[$question_number];
 
             $('#helpingModal').modal('show');
         }
-        else if (selected == "Caravan") {
+        else if (selected == "No - It is not in good condition") {
             var modal = document.getElementById("helpingModal");
-            var message = "You can't install solar panels.";
+            var message = "You will have to repair your roof before being able to install solar panels.";
+            modal.setAttribute('data-message', message);
+
+            var modalMessage = modal.querySelector('#modal-message');
+            modalMessage.innerHTML = message;
+
+            $('#helpingModal').modal('show');
+        }
+        else if (selected == "Low budget") {
+            var modal = document.getElementById("helpingModal");
+            var message = "Most solar panels are roughly the same but some might be outdated models which might not have as high of an efficiency rating.";
+            modal.setAttribute('data-message', message);
+
+            var modalMessage = modal.querySelector('#modal-message');
+            modalMessage.innerHTML = message;
+
+            $('#helpingModal').modal('show');
+        }
+        else if (selected == "A compromise of both") {
+            var modal = document.getElementById("helpingModal");
+            var message = "Most solar panels are roughly the same but some might be outdated models which might not have as high of an efficiency rating.";
+            modal.setAttribute('data-message', message);
+
+            var modalMessage = modal.querySelector('#modal-message');
+            modalMessage.innerHTML = message;
+
+            $('#helpingModal').modal('show');
+        }
+        else if (selected == "Maybe - I might want it in the future") {
+            var modal = document.getElementById("helpingModal");
+            var message = "A battery system is highly beneficial, seeing how your installation can be future-proofed is a good idea.";
+            modal.setAttribute('data-message', message);
+
+            var modalMessage = modal.querySelector('#modal-message');
+            modalMessage.innerHTML = message;
+
+            $('#helpingModal').modal('show');
+        }
+        else if (selected == "Lower budget") {
+            var modal = document.getElementById("helpingModal");
+            var message = "Lower budget batteries might have an awful management software interface, and overall can be a worse off experience.";
+            modal.setAttribute('data-message', message);
+
+            var modalMessage = modal.querySelector('#modal-message');
+            modalMessage.innerHTML = message;
+
+            $('#helpingModal').modal('show');
+        }
+        else if (selected == "Yes - I experience power outages") {
+            var modal = document.getElementById("helpingModal");
+            var message = "You should consider getting a battery system, if you have decided to do so, ensure the electrician wires it correctly as to enable autonomy from the grid.";
+            modal.setAttribute('data-message', message);
+
+            var modalMessage = modal.querySelector('#modal-message');
+            modalMessage.innerHTML = message;
+
+            $('#helpingModal').modal('show');
+        }
+        else if (selected == "No - The board is in an obstructed location which is difficult to access") {
+            var modal = document.getElementById("helpingModal");
+            var message = "Many electricians will often refuse this type of job as it is close to impossible without ripping up the building.\nConsider finding a solution to this before hand if there is one.";
+            modal.setAttribute('data-message', message);
+
+            var modalMessage = modal.querySelector('#modal-message');
+            modalMessage.innerHTML = message;
+
+            $('#helpingModal').modal('show');
+        }
+        else if (selected == "No - I have no spare room for batteries or an inverter") {
+            var modal = document.getElementById("helpingModal");
+            var message = "This also needs to be taken into account, as space is required for these battery systems. Preferably in a safe location.";
+            modal.setAttribute('data-message', message);
+
+            var modalMessage = modal.querySelector('#modal-message');
+            modalMessage.innerHTML = message;
+
+            $('#helpingModal').modal('show');
+        }
+        else if (selected == "An economic investment") {
+            var modal = document.getElementById("helpingModal");
+            var message = "Take note, that unless you have spare cash lying around, this sort of investment often takes 5-10 years to turn a profit. \nSolar panels also only currently last 25 years as well.";
             modal.setAttribute('data-message', message);
 
             var modalMessage = modal.querySelector('#modal-message');
