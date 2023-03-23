@@ -84,7 +84,7 @@ $questions = array(
     array(
         'type' => 'radio',
         'bootstrap' => 'form-check-input',
-        'question' => 'Is your roof in good condition?',
+        'question' => 'Is your roof broken / is your roof in good condition?ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ',
         'answers' => array(
             'Yes - It is in a condition in which solar panels can be installed',
             'No - It is not in good condition'
@@ -595,53 +595,58 @@ $counties = array(
 );
 
 if (isset($_POST['submit'])) {
+    if (!(isset($_SESSION['user_responses']))) {
+        $_SESSION['user_responses'] = array();
+        for ($i = 0; $i<count($questions); $i++) {
+            $_SESSION['user_responses'][$i] = "";
+        }    
+    }
+    
     $question_number = (int) $_POST['question_number'];
     if (isset($_POST['answer']) and !(empty($_POST['answer']))) {
         $answer = $_POST['answer'];
+        $cost = $_SESSION['cost'];
         $_SESSION['user_responses'][$question_number] = $answer;
-        $_SESSION['valid'] = True;
-
-        // Code for calculating cost
-        $cost = $_SESSION['user_responses'][1000];      
 
         if ($question_number > 1) {
             $years = $_SESSION['user_responses'][1];
         }
 
-        if ($question_number == '0') {
+        if ($question_number == 0) {
             // 8 kWh energy use per day --> Solar Panels with 4 kWp output
             // Thus £5000
             $cost = $cost * ($answer / 2) * 1250;
         }
-        elseif ($question_number == '1') {
+        elseif ($question_number == 1) {
             // £5000 pays off in 10 years
             $cost  = $cost / ($answer * 500);
             if ( $cost < 1) {
                 $cost = 0;
             }
         }
-        elseif ($question_number == '4' and $answer == "No - It is not in good condition") {
+        elseif ($question_number == 4 and $answer == "No - It is not in good condition") {
             $cost  = $cost + (2000 / $years);
         }
-        elseif ($question_number == '5' and $answer == "Low budget") {
+        elseif ($question_number == 5 and $answer == "Low budget") {
             $cost = $cost - (500 / $years);
         }
-        elseif ($question_number == '5' and $answer == "A compromise of both") {
+        elseif ($question_number == 5 and $answer == "A compromise of both") {
             $cost = $cost - (250 / $years);
         }
-        elseif ($question_number == "7") {
+        elseif ($question_number == 7) {
             // 8 kWh costs 6000
             $cost = $cost + (($answer * 750) / $years);
         }
-        elseif ($question_number == "8" and $answer == "Lower budget") {
+        elseif ($question_number == 8 and $answer == "Lower budget") {
             $cost = $cost - (500 / $years);
         }
-        elseif ($question_number == "10" and $answer == "No - The board is in an obstructed location which is difficult to access") {
+        elseif ($question_number == 10 and $answer == "No - The board is in an obstructed location which is difficult to access") {
             $cost = $cost - (1000 / $years);
         }
-        $_SESSION['user_responses'][1000] = $cost;
+        $_SESSION['cost'] = $cost;
+        
         // Code for question progression
-        if ($question_number == '6' and $answer == 'No - Batteries are not what I am looking for') {
+        if ($question_number == 6 and $answer == 'No - Batteries are not what I am looking for') {
             $question_number = 9;
         }
         else {
@@ -656,7 +661,6 @@ if (isset($_POST['submit'])) {
         exit();
     }
     else {
-        $_SESSION['valid'] = False;
         header('Location: ' . $_SERVER['PHP_SELF'] . '?q=' . $question_number);
         exit();
     }
@@ -666,21 +670,32 @@ if (isset($_GET['q'])) {
     $question_number = (int) $_GET['q'];
 } else {
     $question_number = 0;
-}
-
-if (!(isset($_SESSION['valid']))) {
-    $_SESSION['valid'] = True;
+    $_SESSION['cost'] = 1;
 }
 
 $question = $questions[$question_number];
+if (!(isset($_SESSION['user_responses']))) {
+    $user_responses = array();
+    for ($i = 0; $i<count($questions); $i++) {
+            $user_responses[$i] = "";
+        } 
+}
+else {
+    $user_responses = $_SESSION['user_responses'];
+}
 
+if (!(isset($_SESSION['cost']))) {
+    $_SESSION['cost'] = 1; 
+}
+
+$cost = $_SESSION['cost'];
 ?>
 
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Products - Brand</title>
+    <title>InfoSolar</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&amp;display=swap">
     <link rel="stylesheet" href="assets/css/Stats-icons.css">
@@ -752,15 +767,13 @@ $question = $questions[$question_number];
                         </div>
                         <div class="modal-body">
                             <p style="color: var(--bs-black);">
-                            The rough cost of your setup per year is <?php $cost; ?> <br>
+                            The rough cost of your setup per year is £<?php echo round($cost, 2); ?><br>
                             The following companies offer services in your area,
-                            <?php foreach ($counties as $county): ?>
-                                <?php if ($county == $_SESSION['user_responses'][2]): ?>*
-                                    <?php foreach ($comapnies as $company): ?>
-                                        <p style="color: var(--bs-black);"><span style="color: var(--bs-blue);"><b><?php echo $company['name']; ?></b></span> found <a href="<?php echo $company['link']; ?>" target='_blank'>here</a> </p>
-                                    <?php endforeach; ?>
-                                <?php endif ?>    
-                            <?php endforeach; ?>
+                            <?php if (array_key_exists($user_responses[2], $counties)): ?>
+                                <?php foreach ($counties[$user_responses[2]] as $company): ?>
+                                    <p style="color: var(--bs-black);"><span style="color: var(--bs-blue);"><b><?php echo $company['name']; ?></b></span> found <a href="<?php echo $company['link']; ?>" target='_blank'>here</a> </p>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                             </p>
                         </div>
                         <div class="modal-footer">
@@ -788,7 +801,19 @@ $question = $questions[$question_number];
                 </div>
             </div>
             <!-- END MODAL -->
-            <img class="rounded img-fluid shadow w-100 fit-cover" src="assets/img/products/1.jpg" style="height: 500px;">
+            <div class="carousel slide" data-bs-ride="false" id="carousel-1">
+                <div class="carousel-inner">
+                    <div class="carousel-item active"><img style="height: 10%;" class="w-100 d-block" src="assets/img/1.jpg" alt="Slide Image"></div>
+                    <div class="carousel-item"><img style="height: 10%;" class="w-100 d-block" src="assets/img/2.jpg" alt="Slide Image"></div>
+                    <div class="carousel-item"><img style="height: 10%;" class="w-100 d-block" src="assets/img/3.jpg" alt="Slide Image"></div>
+                </div>
+                <div><a class="carousel-control-prev" href="#carousel-1" role="button" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span class="visually-hidden">Previous</span></a><a class="carousel-control-next" href="#carousel-1" role="button" data-bs-slide="next"><span class="carousel-control-next-icon"></span><span class="visually-hidden">Next</span></a></div>
+                <ol class="carousel-indicators">
+                    <li data-bs-target="#carousel-1" data-bs-slide-to="0" class="active"></li>
+                    <li data-bs-target="#carousel-1" data-bs-slide-to="1"></li>
+                    <li data-bs-target="#carousel-1" data-bs-slide-to="2"></li>
+                </ol>
+            </div>
         </div>
         <section class="py-5"></section>
     </section>
