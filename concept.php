@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Contacts - Brand</title>
+    <title>InfoSolar</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&amp;display=swap">
     <link rel="stylesheet" href="assets/css/Stats-icons.css">
@@ -29,8 +29,8 @@
             <div class="row mb-5">
                 <div class="col-md-8 col-xl-6 text-center mx-auto">
                     <p class="fw-bold text-success mb-2">Information</p>
-                    <h2 class="fw-bold">The aim of this website is to enable people to make informed choices about green energy solutions available to the public.<br><br><br><br><br></h2>
-                    <h2 class="fw-bold">This calculator gives you information on the respective prices of products and lets you sort and filter so that you can find something which fits your needs.</h2>
+                    <h2 class="fw-bold">The aim of this website is to enable people to make informed choices about green energy solutions available to the public.<br></h2>
+                    <h2 class="fw-bold">This calculator enables you to make a better financial decision.</h2>
                 </div>
             </div>
         </div>
